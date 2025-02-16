@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [news, setNews] = useState([]);
@@ -8,15 +10,20 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchNews() {
-      try {
-        const response = await fetch("https://api.publicapis.org/entries"); // Placeholder API for news
-        const data = await response.json();
-        setNews(data.entries.slice(0, 5)); // Example data fetch
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      }
+      const response = await fetch("https://api.publicapis.org/entries"); // Placeholder API for news
+      const data = await response.json();
+      setNews(data.entries.slice(0, 5)); // Example data fetch
     }
     fetchNews();
+  }, []);
+
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      const response = await fetch("https://example.com/leaderboard-api"); // Placeholder API
+      const data = await response.json();
+      setLeaderboard(data.leaderboard);
+    }
+    fetchLeaderboard();
   }, []);
 
   function handleSubmission(event) {
@@ -31,66 +38,88 @@ export default function Home() {
   );
 
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
-      <h1 style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold" }}>
-        DogeJavu: Government Efficiency Tracker
-      </h1>
-      <p style={{ textAlign: "center" }}>
-        Tracking government waste and efficiency efforts in real-time.
-      </p>
-
-      <h2>Latest Reports</h2>
-      <div>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-center mb-6">DogeJavu: Government Efficiency Tracker</h1>
+      <p className="text-center mb-4">Tracking government waste and efficiency efforts in real-time.</p>
+      
+      <h2 className="text-2xl font-semibold mt-6">Latest Reports</h2>
+      <div className="grid gap-4 mt-4">
         {news.length > 0 ? (
           news.map((item, index) => (
-            <div key={index} style={{ padding: "10px", border: "1px solid #ccc", marginBottom: "10px" }}>
-              <h3>{item.API}</h3>
-              <p>{item.Description}</p>
-              <a href={item.Link} target="_blank" rel="noopener noreferrer">Read More</a>
-            </div>
+            <Card key={index}>
+              <CardContent className="p-4">
+                <h3 className="text-xl font-bold">{item.API}</h3>
+                <p>{item.Description}</p>
+                <a
+                  href={item.Link}
+                  target="_blank"
+                  className="text-blue-600 underline"
+                >
+                  Read More
+                </a>
+              </CardContent>
+            </Card>
           ))
         ) : (
           <p>Loading updates...</p>
         )}
       </div>
 
-      <h2>Leaderboard: Most Efficient & Wasteful Agencies</h2>
-      <div>
+      <h2 className="text-2xl font-semibold mt-6">Leaderboard: Most Efficient & Wasteful Agencies</h2>
+      <div className="grid gap-4 mt-4">
         {leaderboard.length > 0 ? (
           leaderboard.map((agency, index) => (
-            <div key={index} style={{ padding: "10px", border: "1px solid #ccc", marginBottom: "10px" }}>
-              <h3>{agency.name}</h3>
-              <p>Efficiency Score: {agency.score}</p>
-            </div>
+            <Card key={index}>
+              <CardContent className="p-4">
+                <h3 className="text-xl font-bold">{agency.name}</h3>
+                <p>Efficiency Score: {agency.score}</p>
+              </CardContent>
+            </Card>
           ))
         ) : (
-          <p>No leaderboard data available.</p>
+          <p>Loading leaderboard...</p>
         )}
       </div>
 
-      <h2>Report Government Waste</h2>
-      <form onSubmit={handleSubmission}>
-        <input type="text" name="report" placeholder="Describe the wasteful spending..." required style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-        <button type="submit" style={{ padding: "10px 15px", background: "red", color: "white", border: "none", cursor: "pointer" }}>Submit Report</button>
+      <h2 className="text-2xl font-semibold mt-6">Report Government Waste</h2>
+      <form onSubmit={handleSubmission} className="mt-4">
+        <input
+          type="text"
+          name="report"
+          placeholder="Describe the wasteful spending..."
+          className="border p-2 w-full"
+          required
+        />
+        <Button type="submit" className="bg-red-500 text-white px-4 py-2 rounded-md mt-2">
+          Submit Report
+        </Button>
       </form>
 
-      <h2>User Submissions</h2>
-      <input type="text" placeholder="Search reports..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-      <div>
+      <h2 className="text-2xl font-semibold mt-6">User Submissions</h2>
+      <input
+        type="text"
+        placeholder="Search reports..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="border p-2 w-full mb-4"
+      />
+      <div className="mt-4">
         {filteredSubmissions.length > 0 ? (
           filteredSubmissions.map((submission, index) => (
-            <div key={index} style={{ padding: "10px", border: "1px solid #ccc", marginBottom: "10px" }}>
-              <p>{submission}</p>
-            </div>
+            <Card key={index}>
+              <CardContent className="p-4">
+                <p>{submission}</p>
+              </CardContent>
+            </Card>
           ))
         ) : (
           <p>No reports match your search.</p>
         )}
       </div>
-    </div>
-  );
-}
 
+      <div className="text-center mt-6">
+        <Button className="bg-blue-500 text-white px-4 py-2 rounded-md">Subscribe for Updates</Button>
+      </div>
     </div>
   );
 }
